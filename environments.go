@@ -47,7 +47,11 @@ func (env Environment) String() string {
 //
 // GitLab API docs:
 // https://docs.gitlab.com/ee/api/environments.html#list-environments
-type ListEnvironmentsOptions ListOptions
+type ListEnvironmentsOptions struct {
+	ListOptions
+	Name         *string    `url:"name,omitempty" json:"search,omitempty"`
+	Search       *string    `url:"search,omitempty" json:"search,omitempty"`
+}
 
 // ListEnvironments gets a list of environments from a project, sorted by name
 // alphabetically.
