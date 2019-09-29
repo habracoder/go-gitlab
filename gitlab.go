@@ -204,13 +204,26 @@ var notificationLevelTypes = map[string]NotificationLevelValue{
 // GitLab API docs: https://docs.gitlab.com/ce/api/
 type VisibilityValue string
 
-// List of available visibility levels
+// List of available visibility levels.
 //
 // GitLab API docs: https://docs.gitlab.com/ce/api/
 const (
 	PrivateVisibility  VisibilityValue = "private"
 	InternalVisibility VisibilityValue = "internal"
 	PublicVisibility   VisibilityValue = "public"
+)
+
+// VariableTypeValue represents a variable type within GitLab.
+//
+// GitLab API docs: https://docs.gitlab.com/ce/api/
+type VariableTypeValue string
+
+// List of available variable types.
+//
+// GitLab API docs: https://docs.gitlab.com/ce/api/
+const (
+	EnvVariableType  VariableTypeValue = "env_var"
+	FileVariableType VariableTypeValue = "file"
 )
 
 // MergeMethodValue represents a project merge type within GitLab.
@@ -291,7 +304,6 @@ type Client struct {
 	Boards                *IssueBoardsService
 	Branches              *BranchesService
 	BroadcastMessage      *BroadcastMessagesService
-	BuildVariables        *BuildVariablesService
 	CIYMLTemplate         *CIYMLTemplatesService
 	Commits               *CommitsService
 	ContainerRegistry     *ContainerRegistryService
@@ -305,6 +317,7 @@ type Client struct {
 	Features              *FeaturesService
 	GitIgnoreTemplates    *GitIgnoreTemplatesService
 	GroupBadges           *GroupBadgesService
+	GroupCluster          *GroupClustersService
 	GroupIssueBoards      *GroupIssueBoardsService
 	GroupLabels           *GroupLabelsService
 	GroupMembers          *GroupMembersService
@@ -341,6 +354,7 @@ type Client struct {
 	Releases              *ReleasesService
 	Repositories          *RepositoriesService
 	RepositoryFiles       *RepositoryFilesService
+	ResourceLabelEvents   *ResourceLabelEventsService
 	Runners               *RunnersService
 	Search                *SearchService
 	Services              *ServicesService
@@ -440,7 +454,6 @@ func newClient(httpClient *http.Client) *Client {
 	c.Boards = &IssueBoardsService{client: c}
 	c.Branches = &BranchesService{client: c}
 	c.BroadcastMessage = &BroadcastMessagesService{client: c}
-	c.BuildVariables = &BuildVariablesService{client: c}
 	c.CIYMLTemplate = &CIYMLTemplatesService{client: c}
 	c.Commits = &CommitsService{client: c}
 	c.ContainerRegistry = &ContainerRegistryService{client: c}
@@ -454,6 +467,7 @@ func newClient(httpClient *http.Client) *Client {
 	c.Features = &FeaturesService{client: c}
 	c.GitIgnoreTemplates = &GitIgnoreTemplatesService{client: c}
 	c.GroupBadges = &GroupBadgesService{client: c}
+	c.GroupCluster = &GroupClustersService{client: c}
 	c.GroupIssueBoards = &GroupIssueBoardsService{client: c}
 	c.GroupLabels = &GroupLabelsService{client: c}
 	c.GroupMembers = &GroupMembersService{client: c}
@@ -490,6 +504,7 @@ func newClient(httpClient *http.Client) *Client {
 	c.Releases = &ReleasesService{client: c}
 	c.Repositories = &RepositoriesService{client: c}
 	c.RepositoryFiles = &RepositoryFilesService{client: c}
+	c.ResourceLabelEvents = &ResourceLabelEventsService{client: c}
 	c.Runners = &RunnersService{client: c}
 	c.Search = &SearchService{client: c}
 	c.Services = &ServicesService{client: c}
@@ -860,6 +875,14 @@ func String(v string) *string {
 	return p
 }
 
+// Time is a helper routine that allocates a new time.Time value
+// to store v and returns a pointer to it.
+func Time(v time.Time) *time.Time {
+	p := new(time.Time)
+	*p = v
+	return p
+}
+
 // AccessLevel is a helper routine that allocates a new AccessLevelValue
 // to store v and returns a pointer to it.
 func AccessLevel(v AccessLevelValue) *AccessLevelValue {
@@ -880,6 +903,14 @@ func BuildState(v BuildStateValue) *BuildStateValue {
 // to store v and returns a pointer to it.
 func NotificationLevel(v NotificationLevelValue) *NotificationLevelValue {
 	p := new(NotificationLevelValue)
+	*p = v
+	return p
+}
+
+// VariableType is a helper routine that allocates a new VariableTypeValue
+// to store v and returns a pointer to it.
+func VariableType(v VariableTypeValue) *VariableTypeValue {
+	p := new(VariableTypeValue)
 	*p = v
 	return p
 }

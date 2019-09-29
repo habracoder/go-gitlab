@@ -203,6 +203,7 @@ type ListProjectsOptions struct {
 	WithMergeRequestsEnabled *bool             `url:"with_merge_requests_enabled,omitempty" json:"with_merge_requests_enabled,omitempty"`
 	MinAccessLevel           *AccessLevelValue `url:"min_access_level,omitempty" json:"min_access_level,omitempty"`
 	WithCustomAttributes     *bool             `url:"with_custom_attributes,omitempty" json:"with_custom_attributes,omitempty"`
+	WithProgrammingLanguage  *string           `url:"with_programming_language,omitempty" json:"with_programming_language,omitempty"`
 }
 
 // ListProjects gets a list of projects accessible by the authenticated user.
@@ -416,7 +417,7 @@ func (s *ProjectsService) GetProjectEvents(pid interface{}, opt *GetProjectEvent
 	return p, resp, err
 }
 
-// CreateProjectOptions represents the available CreateProjects() options.
+// CreateProjectOptions represents the available CreateProject() options.
 //
 // GitLab API docs: https://docs.gitlab.com/ee/api/projects.html#create-project
 type CreateProjectOptions struct {
@@ -1314,8 +1315,8 @@ func (s *ProjectsService) ChangeApprovalConfiguration(pid interface{}, opt *Chan
 // GitLab API docs:
 // https://docs.gitlab.com/ee/api/merge_request_approvals.html#change-allowed-approvers
 type ChangeAllowedApproversOptions struct {
-	ApproverIDs      []*int `url:"approver_ids,omitempty" json:"approver_ids,omitempty"`
-	ApproverGroupIDs []*int `url:"approver_group_ids,omitempty" json:"approver_group_ids,omitempty"`
+	ApproverIDs      []*int `url:"approver_ids" json:"approver_ids"`
+	ApproverGroupIDs []*int `url:"approver_group_ids" json:"approver_group_ids"`
 }
 
 // ChangeAllowedApprovers updates the list of approvers and approver groups.
@@ -1329,7 +1330,7 @@ func (s *ProjectsService) ChangeAllowedApprovers(pid interface{}, opt *ChangeAll
 	}
 	u := fmt.Sprintf("projects/%s/approvers", pathEscape(project))
 
-	req, err := s.client.NewRequest("POST", u, opt, options)
+	req, err := s.client.NewRequest("PUT", u, opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -1341,4 +1342,28 @@ func (s *ProjectsService) ChangeAllowedApprovers(pid interface{}, opt *ChangeAll
 	}
 
 	return pa, resp, err
+}
+
+// StartMirroringProject start the pull mirroring process for a project.
+//
+// GitLab API docs:
+// https://docs.gitlab.com/ee/api/projects.html#start-the-pull-mirroring-process-for-a-project-starter
+func (s *ProjectsService) StartMirroringProject(pid interface{}, options ...OptionFunc) (*Response, error) {
+	project, err := parseID(pid)
+	if err != nil {
+		return nil, err
+	}
+	u := fmt.Sprintf("projects/%s/mirror/pull", pathEscape(project))
+
+	req, err := s.client.NewRequest("POST", u, nil, options)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.client.Do(req, nil)
+	if err != nil {
+		return resp, err
+	}
+
+	return resp, err
 }

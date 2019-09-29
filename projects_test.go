@@ -468,7 +468,7 @@ func TestChangeAllowedApprovers(t *testing.T) {
 	defer teardown(server)
 
 	mux.HandleFunc("/api/v4/projects/1/approvers", func(w http.ResponseWriter, r *http.Request) {
-		testMethod(t, r, "POST")
+		testMethod(t, r, "PUT")
 		testBody(t, r, `{"approver_ids":[1],"approver_group_ids":[2]}`)
 		fmt.Fprint(w, `{
 			"approvers": [{"user":{"id":1}}],
@@ -489,14 +489,7 @@ func TestChangeAllowedApprovers(t *testing.T) {
 	want := &ProjectApprovals{
 		Approvers: []*MergeRequestApproverUser{
 			&MergeRequestApproverUser{
-				User: struct {
-					ID        int    `json:"id"`
-					Name      string `json:"name"`
-					Username  string `json:"username"`
-					State     string `json:"state"`
-					AvatarURL string `json:"avatar_url"`
-					WebURL    string `json:"web_url"`
-				}{
+				User: &BasicUser{
 					ID: 1,
 				},
 			},
