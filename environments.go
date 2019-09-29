@@ -49,7 +49,7 @@ func (env Environment) String() string {
 // https://docs.gitlab.com/ee/api/environments.html#list-environments
 type ListEnvironmentsOptions struct {
 	ListOptions
-	Name         *string    `url:"name,omitempty" json:"search,omitempty"`
+	Name         *string           `url:"name,omitempty" json:"name,omitempty"`
 	Search       *string    `url:"search,omitempty" json:"search,omitempty"`
 }
 
